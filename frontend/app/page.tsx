@@ -1,7 +1,8 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 export default function FeedbackForm() {
   const router = useRouter();
   const [form, setForm] = useState({
@@ -15,17 +16,33 @@ export default function FeedbackForm() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  // Inside your component:
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
 
-    await fetch(`${process.env.NEXT_PUBLIC_API_URL}/feedbacks`, {
+  if (!form.fullname || !form.email || !form.gender || !form.description) {
+    toast.error('All fields are required!');
+    return;
+  }
+
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/feedbacks`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(form),
     });
 
-    router.push('/feedback-list');
-  };
+    if (!res.ok) throw new Error('Failed to submit feedback');
+
+    toast.success('Feedback submitted successfully!');
+    setTimeout(() => {
+      router.push('/feedback-list');
+    }, 2000);
+  } catch (error) {
+    toast.error('Something went wrong. Please try again.');
+    console.error(error);
+  }
+};
 
   const handleReset = () => {
     setForm({ fullname: '', email: '', gender: '', description: '' });
@@ -49,6 +66,7 @@ export default function FeedbackForm() {
           <button type="button" onClick={handleReset} className="px-4 py-2 border rounded">Reset</button>
         </div>
       </form>
+      <ToastContainer position="top-center" autoClose={3000} />
     </div>
   );
 }

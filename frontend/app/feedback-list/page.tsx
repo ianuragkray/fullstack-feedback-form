@@ -1,6 +1,6 @@
-'use client';
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+"use client";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 type Feedback = {
   id: number;
@@ -16,15 +16,15 @@ export default function FeedbackList() {
 
   useEffect(() => {
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/feedbacks`)
-      .then(res => res.json())
+      .then((res) => res.json())
       .then(setData);
   }, []);
 
   const handleDelete = async (id: number) => {
     await fetch(`${process.env.NEXT_PUBLIC_API_URL}/feedbacks/${id}`, {
-      method: 'DELETE',
+      method: "DELETE",
     });
-    setData(prev => prev.filter(item => item.id !== id));
+    setData((prev) => prev.filter((item) => item.id !== id));
   };
 
   return (
@@ -41,15 +41,31 @@ export default function FeedbackList() {
           </tr>
         </thead>
         <tbody>
-          {data.map(item => (
+          {data.map((item) => (
             <tr key={item.id}>
               <td className="p-2 border">{item.fullname}</td>
               <td className="p-2 border">{item.email}</td>
               <td className="p-2 border">{item.gender}</td>
               <td className="p-2 border">{item.description}</td>
               <td className="p-2 border flex gap-2">
-                <button onClick={() => router.push(`/edit/${item.id}`)} className="text-blue-600 underline">Edit</button>
-                <button onClick={() => handleDelete(item.id)} className="text-red-600 underline">Delete</button>
+                <button
+                  onClick={() => router.push(`/edit/${item.id}`)}
+                  className="text-blue-600 underline"
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={() => handleDelete(item.id)}
+                  className="text-red-600 underline"
+                >
+                  Delete
+                </button>
+                <button
+                  onClick={() => router.push("/")}
+                  className="text-green-600 underline"
+                >
+                  Go to Feedback Form
+                </button>
               </td>
             </tr>
           ))}
